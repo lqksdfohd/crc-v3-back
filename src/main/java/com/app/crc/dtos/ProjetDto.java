@@ -1,11 +1,10 @@
 package com.app.crc.dtos;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 public class ProjetDto {
     private String nomProjet;
-    private Integer id;
+    private Long id;
+
 }
