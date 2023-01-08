@@ -31,4 +31,18 @@ public class ProjetServiceIntegrationTest {
         Assertions.assertEquals(resultat, fromBase.get());
 
     }
+
+    @Test
+    public void testCreerProjet_projetDejaExistant(){
+        Projet projet = new Projet();
+        projet.setNom("projet existant");
+
+        Projet resultat = projetService.creerProjet(projet);
+
+        Optional<Projet> fromBase = projetRepository.findByNom(projet.getNom());
+
+        Assertions.assertEquals(resultat, fromBase.get());
+        Assertions.assertEquals(10, resultat.getId());
+
+    }
 }
