@@ -1,0 +1,1 @@
+insert into projet (projet_id, nom) values (10, "projet existant");
