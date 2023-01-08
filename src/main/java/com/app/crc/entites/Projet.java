@@ -20,4 +20,12 @@ public class Projet {
     @Column(name = "NOM")
     private String nom;
 
+    public boolean equals(Object obj){
+        if(obj instanceof Projet){
+            Projet objProjet = (Projet) obj;
+            return id != null && id.equals(objProjet.getId());
+        }
+        return false;
+    }
+
 }
