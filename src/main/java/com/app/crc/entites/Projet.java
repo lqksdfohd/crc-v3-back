@@ -13,7 +13,8 @@ public class Projet {
     @Id
     @GeneratedValue(generator = "projetIdGenerator", strategy = GenerationType.TABLE)
     @TableGenerator( name = "projetIdGenerator", table = "ID_TABLE", pkColumnName = "ID"
-            , pkColumnValue = "projet_ids", valueColumnName = "NEXT_ID", schema = "CRC_SCHEMA")
+            , pkColumnValue = "projet_ids", valueColumnName = "NEXT_ID", schema = "CRC_SCHEMA"
+            ,initialValue = 100)
     @Column(name = "PROJET_ID")
     private Long id;
 
