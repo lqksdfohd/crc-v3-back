@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.lang.reflect.Executable;
 import java.util.Optional;
 
 @SpringBootTest
@@ -36,13 +37,6 @@ public class ProjetServiceIntegrationTest {
     public void testCreerProjet_projetDejaExistant(){
         Projet projet = new Projet();
         projet.setNom("projet existant");
-
-        Projet resultat = projetService.creerProjet(projet);
-
-        Optional<Projet> fromBase = projetRepository.findByNom(projet.getNom());
-
-        Assertions.assertEquals(resultat, fromBase.get());
-        Assertions.assertEquals(10, resultat.getId());
-
+        Assertions.assertThrows(IllegalArgumentException.class, () -> projetService.creerProjet(projet));
     }
 }

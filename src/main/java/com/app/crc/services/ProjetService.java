@@ -16,7 +16,7 @@ public class ProjetService {
     public Projet creerProjet(Projet projet){
         Optional<Projet> fromBase = projetRepository.findByNom(projet.getNom());
         if(fromBase.isPresent()){
-            return fromBase.get();
+            throw new IllegalArgumentException("projet déjà existant");
         }else{
             return projetRepository.save(projet);
         }
