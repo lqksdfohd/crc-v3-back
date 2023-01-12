@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 @RestController
 public class ProjetControlleur {
 
@@ -22,7 +24,7 @@ public class ProjetControlleur {
 
     @PostMapping(value = "/projet",consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = MediaType.APPLICATION_JSON_VALUE)
-    public ProjetDto creerProjet(@RequestBody ProjetDto dto){
+    public ProjetDto creerProjet(@RequestBody @Valid ProjetDto dto){
         Projet input = mapstructService.projetDtoVersProjet(dto);
         Projet resultat = projetService.creerProjet(input);
         return mapstructService.projetVersProjetDto(resultat);
