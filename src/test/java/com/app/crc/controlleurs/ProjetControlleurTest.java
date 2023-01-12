@@ -81,4 +81,26 @@ public class ProjetControlleurTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.raison", Matchers.is("projet déjà existant")));
     }
 
+    @Test
+    @DisplayName("si projetDto en input est mal formé, on renvoie une exception")
+    public void testCreerProjet_checkValidation() throws Exception{
+        ProjetDto dto = new ProjetDto();
+
+        //  /!\
+        Set<ConstraintViolation<ProjetDto>> constraints = new HashSet<>();
+        constraints.add(null);
+
+
+        Mockito.when(projetValidatorService.validateProjet(dto))
+                        .thenReturn(constraints);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/projet")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+
+
+    }
+
 }
