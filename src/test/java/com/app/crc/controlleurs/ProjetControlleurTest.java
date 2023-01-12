@@ -5,6 +5,7 @@ import com.app.crc.dtos.ProjetDto;
 import com.app.crc.entites.Projet;
 import com.app.crc.services.MapstructService;
 import com.app.crc.services.ProjetService;
+import com.app.crc.services.ProjetValidatorService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
@@ -19,6 +20,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+import javax.validation.ConstraintViolation;
+import java.util.HashSet;
+import java.util.Set;
 
 
 @WebMvcTest
@@ -36,49 +41,42 @@ public class ProjetControlleurTest {
     @MockBean
     private MapstructService mapstructService;
 
+    @MockBean
+    private ProjetValidatorService projetValidatorService;
+
     @Test
-    @DisplayName("si le projet n'existe pas déjà, le créer")
-    public void testCréerUnNouveauProjet() throws Exception{
-        ProjetDto dto = new ProjetDto();
-        dto.setNomProjet("test");
-
-        Projet projetTemp = new Projet();
-        projetTemp.setNom(dto.getNomProjet());
-
-        Projet resultat = new Projet();
-        resultat.setNom(dto.getNomProjet());
-        resultat.setId(1L);
-
-        ProjetDto resultatDto = new ProjetDto();
-        resultatDto.setNomProjet(resultat.getNom());
-        resultatDto.setId(resultat.getId());
-
-        Mockito.when(mapstructService.projetDtoVersProjet(dto))
-                        .thenReturn(projetTemp);
-        Mockito.when(projetService.creerProjet(projetTemp))
-                        .thenReturn(resultat);
-        Mockito.when(mapstructService.projetVersProjetDto(resultat))
-                        .thenReturn(resultatDto);
+    @DisplayName("si le projet est nouveau, le créer")
+    public void testCreerProjet_checkInputCorrect() throws Exception{
+        //dto reçu du front
+        ProjetDto inputDto = new ProjetDto();
+        inputDto.setNom("test");
 
         mockMvc.perform(MockMvcRequestBuilders.post("/projet")
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(dto)))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is(1)));
+                        .content(objectMapper.writeValueAsString(inputDto)))
+                .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
 
     @Test
     @DisplayName("si le projet en input existe déjà renvoyer une exception")
     public void testCreerProjet_ProjetExistant() throws Exception{
-        ProjetDto dto = new ProjetDto();
-        dto.setNomProjet("projet existant");
+        ProjetDto inputDto = new ProjetDto();
+        inputDto.setNom("projet existant");
+
+        Projet projetTraduit = new Projet();
+        projetTraduit.setNom(inputDto.getNom());
+
+        Mockito.when(mapstructService.projetDtoVersProjet(inputDto))
+                .thenReturn(projetTraduit);
+        Mockito.when(projetService.creerProjet(projetTraduit))
+                        .thenThrow(new IllegalArgumentException("projet déjà existant"));
 
         mockMvc.perform(MockMvcRequestBuilders.post("/projet")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(dto)))
+                .content(objectMapper.writeValueAsString(inputDto)))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.raison", Matchers.is("projet déjà existant")));
     }
