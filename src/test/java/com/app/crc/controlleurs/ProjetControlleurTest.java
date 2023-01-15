@@ -22,7 +22,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import javax.validation.ConstraintViolation;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 
@@ -100,6 +102,42 @@ public class ProjetControlleurTest {
                 .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
 
+
+    }
+
+
+    @Test
+    public void testListerLesProjetsExistants_signature() throws Exception{
+        mockMvc.perform(MockMvcRequestBuilders.get("/projets")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+
+    @Test
+    @DisplayName("on retourne les projet existants en base")
+    public void testListerLesProjetsExistants_OK() throws Exception{
+        Projet projet = new Projet();
+        projet.setNom("test");
+        projet.setId(1l);
+        List<Projet> projets = new ArrayList<>();
+        projets.add(projet);
+
+        ProjetDto dto = new ProjetDto();
+        dto.setNom(projet.getNom());
+        dto.setId(projet.getId());
+        List<ProjetDto> dtos = new ArrayList<>();
+        dtos.add(dto);
+
+
+        Mockito.when(projetService.recupererTousLesProjets()).thenReturn(projets);
+        Mockito.when(mapstructService.listeProjetVersListeProjetDto(projets))
+                .thenReturn(dtos);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/projets")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].nom", Matchers.is("test")));
 
     }
 
