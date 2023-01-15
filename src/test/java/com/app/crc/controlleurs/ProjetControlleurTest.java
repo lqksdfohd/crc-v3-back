@@ -141,4 +141,49 @@ public class ProjetControlleurTest {
 
     }
 
+    @Test
+    public void testRecupererUnProjet_testSignature() throws Exception{
+        mockMvc.perform(MockMvcRequestBuilders.get("/projet/{projetId}",1L)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    @DisplayName("si un projet correspond à l'id en input on retourne ce projet")
+    public void testRecupererUnProjet_Ok() throws Exception{
+        Projet fromBase = new Projet();
+        fromBase.setId(1L);
+        fromBase.setNom("test");
+
+        ProjetDto dto =  new ProjetDto();
+        dto.setId(fromBase.getId());
+        dto.setNom(fromBase.getNom());
+
+
+        Mockito.when(projetService.recupererUnProjetParId(1L))
+                .thenReturn(fromBase);
+        Mockito.when(mapstructService.projetVersProjetDto(fromBase))
+                        .thenReturn(dto);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/projet/{projetId}", 1L)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.nom", Matchers.is("test")));
+    }
+
+
+
+    @Test
+    @DisplayName("si aucun projet n'existe pour l'id en input on l'indique à l'utilisateur")
+    public void testRecupererUnProjet_projetInexistant()  throws Exception{
+        Mockito.when(projetService.recupererUnProjetParId(Mockito.anyLong()))
+                .thenThrow(new IllegalArgumentException("aucun projet ne correspond à cet id"));
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/projet/{projetId}", 1L)
+                .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.raison", Matchers.is("aucun projet ne correspond à cet id")));
+    }
+
+
+
 }
