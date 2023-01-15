@@ -31,4 +31,13 @@ public class ProjetService {
         iterable.forEach(p -> output.add(p));
         return output;
     }
+
+    public Projet recupererUnProjetParId(Long id){
+        Optional<Projet> optional = projetRepository.findById(id);
+        if(optional.isPresent()){
+            return optional.get();
+        }else{
+            throw new IllegalArgumentException("aucun projet ne correspond à cet id");
+        }
+    }
 }
