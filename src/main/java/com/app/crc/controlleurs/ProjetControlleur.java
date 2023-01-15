@@ -8,13 +8,11 @@ import com.app.crc.services.ProjetService;
 import com.app.crc.services.ProjetValidatorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Valid;
+import javax.websocket.server.PathParam;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -50,5 +48,11 @@ public class ProjetControlleur {
         List<Projet> fromBase = projetService.recupererTousLesProjets();
         List<ProjetDto> output = mapstructService.listeProjetVersListeProjetDto(fromBase);
         return output;
+    }
+
+    @GetMapping(value = "/projet/{projetId}")
+    public ProjetDto recupererUnProjet(@PathVariable("projetId") Long projetId){
+        Projet projet = projetService.recupererUnProjetParId(projetId);
+        return mapstructService.projetVersProjetDto(projet);
     }
 }
