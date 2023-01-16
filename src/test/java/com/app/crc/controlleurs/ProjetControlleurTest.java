@@ -1,6 +1,7 @@
 package com.app.crc.controlleurs;
 
 
+import com.app.crc.dtos.ProjetCompletDto;
 import com.app.crc.dtos.ProjetDto;
 import com.app.crc.entites.Projet;
 import com.app.crc.services.MapstructService;
@@ -155,14 +156,14 @@ public class ProjetControlleurTest {
         fromBase.setId(1L);
         fromBase.setNom("test");
 
-        ProjetDto dto =  new ProjetDto();
+        ProjetCompletDto dto =  new ProjetCompletDto();
         dto.setId(fromBase.getId());
         dto.setNom(fromBase.getNom());
 
 
         Mockito.when(projetService.recupererUnProjetParId(1L))
                 .thenReturn(fromBase);
-        Mockito.when(mapstructService.projetVersProjetDto(fromBase))
+        Mockito.when(mapstructService.projetVersProjetCompletDto(fromBase))
                         .thenReturn(dto);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/projet/{projetId}", 1L)
