@@ -13,7 +13,7 @@ public class Klass {
     @GeneratedValue(generator = "klassIdGenerator")
     @TableGenerator(name = "klassIdGenerator", table = "ID_TABLE", pkColumnName = "ID", pkColumnValue = "klass_id"
     ,valueColumnName = "NEXT_ID", schema = "CRC_SCHEMA", initialValue = 100)
-    private long id;
+    private Long id;
     @Column(name = "NOM")
     private String nom;
 
