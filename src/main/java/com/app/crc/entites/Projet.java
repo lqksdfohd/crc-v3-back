@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Setter
@@ -20,6 +21,9 @@ public class Projet {
 
     @Column(name = "NOM")
     private String nom;
+
+    @OneToMany(mappedBy = "projet")
+    private List<Klass> listeKlass;
 
     public boolean equals(Object obj){
         if(obj instanceof Projet){
