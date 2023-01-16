@@ -1,6 +1,7 @@
 package com.app.crc.controlleurs;
 
 
+import com.app.crc.dtos.ProjetCompletDto;
 import com.app.crc.dtos.ProjetDto;
 import com.app.crc.entites.Projet;
 import com.app.crc.services.MapstructService;
@@ -51,8 +52,8 @@ public class ProjetControlleur {
     }
 
     @GetMapping(value = "/projet/{projetId}")
-    public ProjetDto recupererUnProjet(@PathVariable("projetId") Long projetId){
+    public ProjetCompletDto recupererUnProjet(@PathVariable("projetId") Long projetId){
         Projet projet = projetService.recupererUnProjetParId(projetId);
-        return mapstructService.projetVersProjetDto(projet);
+        return mapstructService.projetVersProjetCompletDto(projet);
     }
 }
