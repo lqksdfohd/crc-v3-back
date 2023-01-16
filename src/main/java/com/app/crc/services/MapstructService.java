@@ -1,5 +1,6 @@
 package com.app.crc.services;
 
+import com.app.crc.dtos.ProjetCompletDto;
 import com.app.crc.dtos.ProjetDto;
 import com.app.crc.entites.Projet;
 import org.mapstruct.Mapper;
@@ -14,6 +15,8 @@ public interface MapstructService {
     Projet projetDtoVersProjet(ProjetDto dto);
 
     ProjetDto projetVersProjetDto(Projet projet);
+
+    ProjetCompletDto projetVersProjetCompletDto(Projet projet);
 
     List<ProjetDto> listeProjetVersListeProjetDto(List<Projet> liste);
 }
