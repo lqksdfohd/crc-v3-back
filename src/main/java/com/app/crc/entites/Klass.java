@@ -10,6 +10,7 @@ import javax.persistence.*;
 @Setter
 public class Klass {
     @Id
+    @Column(name = "KLASS_ID")
     @GeneratedValue(generator = "klassIdGenerator")
     @TableGenerator(name = "klassIdGenerator", table = "ID_TABLE", pkColumnName = "ID", pkColumnValue = "klass_id"
     ,valueColumnName = "NEXT_ID", schema = "CRC_SCHEMA", initialValue = 100)
