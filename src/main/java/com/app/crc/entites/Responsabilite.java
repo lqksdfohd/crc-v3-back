@@ -2,6 +2,7 @@ package com.app.crc.entites;
 
 import javax.persistence.*;
 
+@Entity
 public class Responsabilite {
 
 
