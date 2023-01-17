@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Getter
@@ -21,4 +22,10 @@ public class Klass {
     @ManyToOne
     @JoinColumn(name = "PROJET_ID")
     private Projet projet;
+
+    @OneToMany(mappedBy = "klass")
+    List<Responsabilite> listeResponsabilites;
+
+    @OneToMany(mappedBy = "principal")
+    private List<Collaborateur> listeCollaborateurs;
 }
