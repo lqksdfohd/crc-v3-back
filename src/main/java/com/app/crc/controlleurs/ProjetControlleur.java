@@ -1,9 +1,12 @@
 package com.app.crc.controlleurs;
 
 
+import com.app.crc.dtos.KlassDto;
 import com.app.crc.dtos.ProjetCompletDto;
 import com.app.crc.dtos.ProjetDto;
+import com.app.crc.entites.Klass;
 import com.app.crc.entites.Projet;
+import com.app.crc.services.KlassService;
 import com.app.crc.services.MapstructService;
 import com.app.crc.services.ProjetService;
 import com.app.crc.services.ProjetValidatorService;
@@ -13,10 +16,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Valid;
-import javax.websocket.server.PathParam;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @RestController
 public class ProjetControlleur {
@@ -29,6 +30,9 @@ public class ProjetControlleur {
 
     @Autowired
     private ProjetValidatorService validatorService;
+
+    @Autowired
+    private KlassService klassService;
 
     @PostMapping(value = "/projet",consumes = MediaType.APPLICATION_JSON_VALUE,
     produces = MediaType.APPLICATION_JSON_VALUE)
@@ -55,5 +59,24 @@ public class ProjetControlleur {
     public ProjetCompletDto recupererUnProjet(@PathVariable("projetId") Long projetId){
         Projet projet = projetService.recupererUnProjetParId(projetId);
         return mapstructService.projetVersProjetCompletDto(projet);
+    }
+
+    @PostMapping(value = "/projet/{projetId}")
+    public KlassDto ajouterUneKlassAuProjet(@PathVariable(name = "projetId") Long id
+            , @Valid @RequestBody KlassDto dto){
+        if(dto.isCreation()) {
+            return sauvegarderUneNouvelleKlass(id, dto);
+        }else{
+            return null;
+        }
+    }
+
+    private KlassDto sauvegarderUneNouvelleKlass(Long id, KlassDto dto){
+        Klass klass = mapstructService.klassDtoVersKlass(dto);
+        Projet projet = projetService.recupererUnProjetParId(id);
+        klass.setProjet(projet);
+        Klass result = klassService.sauvegarderUneKlass(klass);
+        KlassDto output = mapstructService.klassVersKlassDto(result);
+        return output;
     }
 }

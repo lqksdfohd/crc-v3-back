@@ -1,5 +1,7 @@
 package com.app.crc.services;
 
+import com.app.crc.dtos.KlassDto;
+import com.app.crc.entites.Klass;
 import com.app.crc.entites.Projet;
 import com.app.crc.repository.ProjetRepository;
 import org.springframework.beans.factory.annotation.Autowired;

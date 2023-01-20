@@ -1,9 +1,12 @@
 package com.app.crc.controlleurs;
 
 
+import com.app.crc.dtos.KlassDto;
 import com.app.crc.dtos.ProjetCompletDto;
 import com.app.crc.dtos.ProjetDto;
+import com.app.crc.entites.Klass;
 import com.app.crc.entites.Projet;
+import com.app.crc.services.KlassService;
 import com.app.crc.services.MapstructService;
 import com.app.crc.services.ProjetService;
 import com.app.crc.services.ProjetValidatorService;
@@ -46,6 +49,9 @@ public class ProjetControlleurTest {
 
     @MockBean
     private ProjetValidatorService projetValidatorService;
+
+    @MockBean
+    private KlassService klassService;
 
     @Test
     @DisplayName("si le projet est nouveau, le créer")
@@ -156,7 +162,7 @@ public class ProjetControlleurTest {
         fromBase.setId(1L);
         fromBase.setNom("test");
 
-        ProjetCompletDto dto =  new ProjetCompletDto();
+        ProjetCompletDto  dto =  new ProjetCompletDto();
         dto.setId(fromBase.getId());
         dto.setNom(fromBase.getNom());
 
@@ -185,6 +191,38 @@ public class ProjetControlleurTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.raison", Matchers.is("aucun projet ne correspond à cet id")));
     }
 
+    @Test
+    public void testSauvegarderUneNouvelleKlass_notValid() throws Exception{
+        KlassDto dto = new KlassDto();
+        dto.setCreation(true);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/projet/1")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("si une IllegalArgumentException est renvoyé, elle est capturé")
+    public void testSauvegarderUneNouvelleKlass_IllegalArgumentExceptionRenvoye() throws Exception{
+        KlassDto dto = new KlassDto();
+        dto.setCreation(true);
+        dto.setNom("test123");
+
+        Klass klass = new Klass();
+        klass.setNom("test123");
+
+        Mockito.when(projetService.recupererUnProjetParId(Mockito.anyLong()))
+                .thenThrow(new IllegalArgumentException("une exception depuis les services"));
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/projet/1")
+                .content(objectMapper.writeValueAsString(dto))
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.raison", Matchers.is("une exception depuis les services")));
+    }
 
 
 }
