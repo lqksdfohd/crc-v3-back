@@ -21,4 +21,13 @@ public class KlassService {
             return repository.save(klass);
         }
     }
+
+    public void supprimerUneKlass(long id){
+        Optional<Klass> fromBase = repository.findById(id);
+        if(fromBase.isPresent()){
+            repository.delete(fromBase.get());
+        }else{
+            throw new IllegalArgumentException("aucune klass avec cet id n'existe en base");
+        }
+    }
 }
