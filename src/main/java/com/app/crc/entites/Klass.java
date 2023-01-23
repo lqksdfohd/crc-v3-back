@@ -23,9 +23,12 @@ public class Klass {
     @JoinColumn(name = "PROJET_ID")
     private Projet projet;
 
-    @OneToMany(mappedBy = "klass")
+    @OneToMany(mappedBy = "klass", cascade = CascadeType.ALL)
     List<Responsabilite> listeResponsabilites;
 
-    @OneToMany(mappedBy = "principal")
-    private List<Collaborateur> listeCollaborateurs;
+    @OneToMany(mappedBy = "principal", cascade = CascadeType.ALL)
+    private List<Collaborateur> listeEnTantQuePrincipal;
+
+    @OneToMany(mappedBy = "collaborant", cascade = CascadeType.ALL)
+    private List<Collaborateur> listeEnTantQueCollaborant;
 }

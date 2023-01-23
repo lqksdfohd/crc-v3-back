@@ -36,14 +36,6 @@ public class KlassService {
     public void supprimerUneKlass(long id){
         Optional<Klass> fromBase = repository.findById(id);
         if(fromBase.isPresent()){
-            List<Collaborateur> listeCollaborant = collaborateurRepo.findByCollaborantId(fromBase.get().getId());
-            List<Collaborateur> listePrincipal = collaborateurRepo.findByPrincipalId(fromBase.get().getId());
-            listePrincipal.addAll(listeCollaborant);
-            collaborateurRepo.deleteAll(listePrincipal);
-
-            List<Responsabilite> listeResponsabilite = responsabiliteRepo.findByKlassId(fromBase.get().getId());
-            responsabiliteRepo.deleteAll(listeResponsabilite);
-
             repository.delete(fromBase.get());
         }else{
             throw new IllegalArgumentException("aucune klass avec cet id n'existe en base");
