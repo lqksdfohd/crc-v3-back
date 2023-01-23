@@ -41,13 +41,4 @@ public class KlassService {
             throw new IllegalArgumentException("aucune klass avec cet id n'existe en base");
         }
     }
-
-    public Klass findById(Long id){
-        Optional<Klass> fromBase = repository.findById(id);
-        if(fromBase.isPresent()){
-            return fromBase.get();
-        }else{
-            throw new IllegalArgumentException("aucune klass avec cet id n'existe en base");
-        }
-    }
 }

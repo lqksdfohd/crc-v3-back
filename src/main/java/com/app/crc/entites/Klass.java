@@ -31,8 +31,4 @@ public class Klass {
 
     @OneToMany(mappedBy = "collaborant", cascade = CascadeType.ALL)
     private List<Collaborateur> listeEnTantQueCollaborant;
-
-    public boolean isCollaborants(){
-        return listeEnTantQueCollaborant.size() > 0;
-    }
 }
