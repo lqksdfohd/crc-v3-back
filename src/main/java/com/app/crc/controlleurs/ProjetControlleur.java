@@ -72,7 +72,7 @@ public class ProjetControlleur {
     }
 
 
-    @DeleteMapping("/klass/{klassId}")
+    @DeleteMapping("/projet/klass/{klassId}")
     public void supprimerUneKlassDUnProjet(@PathVariable(value = "klassId") Long klassId){
         klassService.supprimerUneKlass(klassId);
     }
