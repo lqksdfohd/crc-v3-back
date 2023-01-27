@@ -63,14 +63,6 @@ public class ProjetControlleur {
 
     @PostMapping(value = "/projet/{projetId}")
     public KlassDto ajouterUneKlassAuProjet(@PathVariable(name = "projetId") Long id, @Valid @RequestBody KlassDto dto){
-        if(dto.isCreation()) {
-            return sauvegarderUneNouvelleKlass(id, dto);
-        }else{
-            return null;
-        }
-    }
-
-    private KlassDto sauvegarderUneNouvelleKlass(Long id, KlassDto dto){
         Klass klass = mapstructService.klassDtoVersKlass(dto);
         Projet projet = projetService.recupererUnProjetParId(id);
         klass.setProjet(projet);
@@ -78,6 +70,7 @@ public class ProjetControlleur {
         KlassDto output = mapstructService.klassVersKlassDto(result);
         return output;
     }
+
 
     @DeleteMapping("/klass/{klassId}")
     public void supprimerUneKlassDUnProjet(@PathVariable(value = "klassId") Long klassId){
