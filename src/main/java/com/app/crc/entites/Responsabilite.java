@@ -25,5 +25,17 @@ public class Responsabilite {
     @JoinColumn(name = "KLASS_ID")
     private Klass klass;
 
+    public boolean hasSameTitre(Responsabilite responsabilite){
+        return titre.equals(responsabilite.getTitre());
+    }
+
+    public boolean equals(Object obj){
+        if(obj instanceof Responsabilite){
+            Responsabilite oResponsabilite = (Responsabilite) obj;
+            return id != null && id.equals(oResponsabilite.id);
+        }else{
+            return false;
+        }
+    }
 
 }
