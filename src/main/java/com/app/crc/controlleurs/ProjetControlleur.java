@@ -61,7 +61,7 @@ public class ProjetControlleur {
         return mapstructService.projetVersProjetCompletDto(projet);
     }
 
-    @PostMapping(value = "/projet/{projetId}")
+    @PostMapping(value = "/projet/{projetId}/klass")
     public KlassDto ajouterUneKlassAuProjet(@PathVariable(name = "projetId") Long id, @Valid @RequestBody KlassDto dto){
         Klass klass = mapstructService.klassDtoVersKlass(dto);
         Projet projet = projetService.recupererUnProjetParId(id);
@@ -75,5 +75,12 @@ public class ProjetControlleur {
     @DeleteMapping("/projet/klass/{klassId}")
     public void supprimerUneKlassDUnProjet(@PathVariable(value = "klassId") Long klassId){
         klassService.supprimerUneKlass(klassId);
+    }
+
+    @PostMapping(value = "/projet/klass")
+    public KlassDto modifierUneKlassDuProjet(@RequestBody KlassDto dto){
+        Klass klass = mapstructService.klassDtoVersKlass(dto);
+        Klass resultat = klassService.modifierUneKlass(klass);
+        return mapstructService.klassVersKlassDto(resultat);
     }
 }
