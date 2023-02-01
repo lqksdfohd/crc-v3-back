@@ -23,12 +23,12 @@ public class Klass {
     @JoinColumn(name = "PROJET_ID")
     private Projet projet;
 
-    @OneToMany(mappedBy = "klass", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "klass", cascade = CascadeType.REMOVE)
     List<Responsabilite> listeResponsabilites;
 
-    @OneToMany(mappedBy = "principal", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "principal", cascade = CascadeType.REMOVE)
     private List<Collaborateur> listeEnTantQuePrincipal;
 
-    @OneToMany(mappedBy = "collaborant", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "collaborant", cascade = CascadeType.REMOVE)
     private List<Collaborateur> listeEnTantQueCollaborant;
 }
