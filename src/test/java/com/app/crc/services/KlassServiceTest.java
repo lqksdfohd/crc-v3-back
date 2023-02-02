@@ -1,5 +1,6 @@
 package com.app.crc.services;
 
+import com.app.crc.entites.Collaborateur;
 import com.app.crc.entites.Klass;
 import com.app.crc.entites.Responsabilite;
 import com.app.crc.repository.CollaborateurRepository;
@@ -32,6 +33,9 @@ public class KlassServiceTest {
 
     private Klass enBase;
     private Klass enInput;
+    private Klass k2;
+    private Klass k3;
+    private Klass k4;
 
     @BeforeEach
     public void setup(){
@@ -54,6 +58,31 @@ public class KlassServiceTest {
         enInput = new Klass();
         enInput.setId(1L);
         enInput.setListeResponsabilites(new ArrayList<>());
+
+        k2 = new Klass();
+        k2.setId(2L);
+        k3 = new Klass();
+        k3.setId(3L);
+        k4 = new Klass();
+        k4.setId(4L);
+
+        Collaborateur c1 = new Collaborateur();
+        c1.setId(1L);
+        c1.setPrincipal(enBase);
+        c1.setCollaborant(k2);
+
+        Collaborateur c2 = new Collaborateur();
+        c2.setId(2L);
+        c2.setPrincipal(enBase);
+        c2.setCollaborant(k3);
+
+        List<Collaborateur> listeCollaborateurs = new ArrayList<>();
+        listeCollaborateurs.add(c1);
+        listeCollaborateurs.add(c2);
+        enBase.setListeEnTantQuePrincipal(listeCollaborateurs);
+
+
+
 
     }
 
@@ -139,6 +168,125 @@ public class KlassServiceTest {
 
         Assertions.assertEquals("r2", resultat.get(0).getTitre());
     }
+
+
+    @Test
+    public void testTrouverNouveauxCollaborateurs_vraiNouveau(){
+        Collaborateur nouveau = new Collaborateur();
+        nouveau.setPrincipal(enInput);
+        nouveau.setCollaborant(k4);
+
+        List<Collaborateur> collaborateurs = new ArrayList<>();
+        collaborateurs.add(nouveau);
+
+        List<Collaborateur> resultat = klassService.trouverLesNouveauxCollaborateurs(collaborateurs, enBase.getListeEnTantQuePrincipal());
+
+        Assertions.assertEquals(k4, resultat.get(0).getCollaborant());
+
+    }
+
+    @DisplayName("si un nouveau collaborateur avec les même caracteristiques(même principal et même collabprant) qu'un en base " +
+            "alors il n'est pas retenue")
+    @Test
+    public void testTrouverNouveauxCollaborateurs_fauxNouveau(){
+        Collaborateur fNouveau = new Collaborateur();
+        fNouveau.setPrincipal(enInput);
+        fNouveau.setCollaborant(k2);
+
+        List<Collaborateur> collaborateurs = new ArrayList<>();
+        collaborateurs.add(fNouveau);
+
+        List<Collaborateur> resultat = klassService.trouverLesNouveauxCollaborateurs(collaborateurs, enBase.getListeEnTantQuePrincipal());
+
+        Assertions.assertEquals(0, resultat.size());
+    }
+
+    @Test
+    public void testMettreAJourLesCollaborateursEnCommun_collaborateursEgaux(){
+        Collaborateur copy = new Collaborateur();
+        copy.setId(1L);
+        copy.setPrincipal(enInput);
+        copy.setCollaborant(k2);
+
+        List<Collaborateur> liste = new ArrayList<>();
+        liste.add(copy);
+
+        Assertions.assertEquals(copy, klassService.
+                mettreAJourLesCollaborateursEnCommun(liste, enBase.getListeEnTantQuePrincipal()).get(0));
+    }
+
+    @Test
+    public void testMettreAJourLesCollaborateursEnCommun_collaborateursPartagentCaracteristiques(){
+        Collaborateur partage = new Collaborateur();
+        partage.setPrincipal(enInput);
+        partage.setCollaborant(k2);
+
+        List<Collaborateur> liste = new ArrayList<>();
+        liste.add(partage);
+
+        List<Collaborateur> resultat = klassService.mettreAJourLesCollaborateursEnCommun(liste, enBase.getListeEnTantQuePrincipal());
+
+        Assertions.assertEquals(1, resultat.size());
+        Assertions.assertEquals(k2, resultat.get(0).getCollaborant());
+    }
+
+    @Test
+    public void testMettreAJourLesCollaborateursEnCommun_unEgalUnPartageCaracteristiques(){
+        Collaborateur copy = new Collaborateur();
+        copy.setPrincipal(enInput);
+        copy.setCollaborant(k2);
+        copy.setId(1L);
+
+        Collaborateur partage = new Collaborateur();
+        partage.setPrincipal(enInput);
+        partage.setCollaborant(k3);
+
+        List<Collaborateur> liste = new ArrayList<>();
+        liste.add(copy);
+        liste.add(partage);
+
+        List<Collaborateur> resultat = klassService.mettreAJourLesCollaborateursEnCommun(liste, enBase.getListeEnTantQuePrincipal());
+
+        Assertions.assertEquals(2, resultat.size());
+        Assertions.assertEquals(k2, resultat.get(0).getCollaborant());
+        Assertions.assertEquals(k3, resultat.get(1).getCollaborant());
+    }
+
+    @Test
+    public void testMettreAJourLesCollaborateursEnCommun_unEgalUnNonPartageantCaracteristiques(){
+        Collaborateur partage = new Collaborateur();
+        partage.setPrincipal(enInput);
+        partage.setCollaborant(k2);
+
+        Collaborateur nonPartage = new Collaborateur();
+        nonPartage.setCollaborant(k4);
+        nonPartage.setPrincipal(enInput);
+
+        List<Collaborateur> liste = new ArrayList<>();
+        liste.add(partage);
+        liste.add(nonPartage);
+
+        List<Collaborateur> resultat = klassService.mettreAJourLesCollaborateursEnCommun(liste, enBase.getListeEnTantQuePrincipal());
+
+        Assertions.assertEquals(1, resultat.size());
+        Assertions.assertEquals(k2, resultat.get(0).getCollaborant());
+    }
+
+    @Test
+    public void testMettreAJourLesCollaborateursEnCommun_unNonEgal(){
+        Collaborateur nonCopy = new Collaborateur();
+        nonCopy.setId(99L);
+        nonCopy.setPrincipal(enInput);
+        nonCopy.setCollaborant(k4);
+
+        List<Collaborateur> liste = new ArrayList<>();
+        liste.add(nonCopy);
+
+        List<Collaborateur> resultat = klassService.mettreAJourLesCollaborateursEnCommun(liste, enBase.getListeEnTantQuePrincipal());
+
+        Assertions.assertEquals(0, resultat.size());
+    }
+
 
 
 
