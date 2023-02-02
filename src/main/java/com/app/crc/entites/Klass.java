@@ -31,4 +31,13 @@ public class Klass {
 
     @OneToMany(mappedBy = "collaborant", cascade = CascadeType.REMOVE)
     private List<Collaborateur> listeEnTantQueCollaborant;
+
+    public boolean equals(Object obj){
+        if(obj instanceof Klass){
+            Klass klass = (Klass) obj;
+            return getId() != null && getId().equals(klass.getId());
+        }else{
+            return false;
+        }
+    }
 }
