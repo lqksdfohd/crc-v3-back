@@ -1,5 +1,6 @@
 package com.app.crc.services;
 
+import com.app.crc.entites.Collaborateur;
 import com.app.crc.entites.Klass;
 import com.app.crc.entites.Responsabilite;
 import com.app.crc.repository.CollaborateurRepository;
@@ -61,10 +62,19 @@ public class KlassService {
         responsabiliteRepo.deleteAll(aSupprimer);
         enBase.setListeResponsabilites(liste);
 
+        Map<Long, Klass> map = recupererLesKlasses(input);
+        List<Collaborateur> collaborateurs = formatterLesCollaborateur(input, map);
 
+        List<Collaborateur> nouveaux = trouverLesNouveauxCollaborateurs(collaborateurs, enBase.getListeEnTantQuePrincipal());
+        List<Collaborateur> communs = mettreAJourLesCollaborateursEnCommun(collaborateurs, enBase.getListeEnTantQuePrincipal());
+        List<Collaborateur> cAGarder = new ArrayList<>(nouveaux);
+        cAGarder.addAll(communs);
+        List<Collaborateur> cASupprimer = trouverLesCollaborateursASupprimer(cAGarder, enBase.getListeEnTantQuePrincipal());
 
-
-
+        Iterable<Collaborateur> cIterable = collaborateurRepo.saveAll(cAGarder);
+        List<Collaborateur> cEnBase = iterToList(cIterable);
+        enBase.setListeEnTantQuePrincipal(cEnBase);
+        collaborateurRepo.deleteAll(cASupprimer);
 
         return enBase;
     }
@@ -160,6 +170,97 @@ public class KlassService {
         List<E> output = new ArrayList<>();
         for (E e : iterable) {
             output.add(e);
+        }
+        return output;
+    }
+
+    public Map<Long,Klass> recupererLesKlasses(Klass input){
+        List<Long> ids = input.getListeEnTantQuePrincipal().stream().map(c -> c.getCollaborant().getId())
+                .collect(Collectors.toList());
+        ids.add(input.getId());
+        Iterable<Klass> iterable = repository.findAllById(ids);
+
+        Map<Long, Klass> map = new HashMap<>();
+        for(Klass k: iterable){
+            map.put(k.getId(), k);
+        }
+
+        return map;
+
+    }
+
+    public List<Collaborateur> formatterLesCollaborateur(Klass input, Map<Long, Klass> map){
+        List<Collaborateur> temp = input.getListeEnTantQuePrincipal();
+        Klass principal = map.get(input.getId());
+        for(Collaborateur c: temp){
+            c.setPrincipal(principal);
+            c.setCollaborant(map.get(c.getCollaborant().getId()));
+        }
+        return temp;
+    }
+
+    /**
+     * permet de trouver les collaborateurs nouveaux
+     * un collaborateur est nouveau si:
+     * 1/il n'existe pas en base, id est null
+     * 2/il ne partage pas les klass principal et collaborateur avec un autre collaborateur
+     * @param enInput
+     * @param enBase
+     * @return
+     */
+    public List<Collaborateur> trouverLesNouveauxCollaborateurs(List<Collaborateur> enInput, List<Collaborateur> enBase){
+        List<Collaborateur> temp = enInput.stream().filter(c -> c.getId() == null).collect(Collectors.toList());
+        List<Collaborateur> nouveaux = new ArrayList<>();
+        for(Collaborateur c: temp){
+            boolean nouvo = true;
+            for(Collaborateur d : enBase){
+                if( c.partagePrincipalAndCollaborant(d)){
+                    nouvo = false;
+                    break;
+                }
+            }
+            if(nouvo){
+                nouveaux.add(c);
+            }
+        }
+        return nouveaux;
+    }
+
+    public List<Collaborateur> mettreAJourLesCollaborateursEnCommun(List<Collaborateur> enInput, List<Collaborateur> enBase){
+        List<Collaborateur> temp = enInput;
+        List<Collaborateur> output = new ArrayList<>();
+
+        for(Collaborateur c: enInput){
+            for(Collaborateur d: enBase){
+                if(c.equals(d)){
+                    d.setPrincipal(c.getPrincipal());
+                    d.setCollaborant(c.getCollaborant());
+                    output.add(d);
+                }else if(c.partagePrincipalAndCollaborant(d)){
+                    output.add(d);
+                }
+            }
+        }
+        return output;
+        
+    }
+
+    public List<Collaborateur> trouverLesCollaborateursASupprimer(List<Collaborateur> enInput, List<Collaborateur> enBase){
+        List<Collaborateur> output = new ArrayList<>();
+        for(Collaborateur c: enBase){
+            boolean aSupprimer = true;
+            for(Collaborateur d: enInput){
+                if(c.equals(d)){
+                    aSupprimer = false;
+                    break;
+                }else if(c.partagePrincipalAndCollaborant(d)){
+                    aSupprimer = false;
+                    break;
+                }
+            }
+            if(aSupprimer){
+                output.add(c);
+            }
         }
         return output;
     }
