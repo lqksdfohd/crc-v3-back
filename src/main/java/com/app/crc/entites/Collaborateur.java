@@ -24,4 +24,18 @@ public class Collaborateur {
     @ManyToOne
     @JoinColumn(name = "COLLABORANT_ID")
     private Klass collaborant;
+
+    public boolean equals(Object obj){
+        if(obj instanceof Collaborateur){
+            Collaborateur collaborateur = (Collaborateur) obj;
+            return getId() != null && getId().equals(collaborateur.getId());
+        }
+        return false;
+    }
+
+    public boolean partagePrincipalAndCollaborant(Collaborateur collaborateur){
+        boolean partagePrincipal = getPrincipal().equals(collaborateur.getPrincipal());
+        boolean partageCollaborant = getCollaborant().equals(collaborateur.getCollaborant());
+        return partagePrincipal && partageCollaborant;
+    }
 }
