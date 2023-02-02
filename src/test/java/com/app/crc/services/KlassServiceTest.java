@@ -7,6 +7,7 @@ import com.app.crc.repository.KlassRepository;
 import com.app.crc.repository.ResponsabiliteRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -56,17 +57,23 @@ public class KlassServiceTest {
 
     }
 
+    @DisplayName("si la responsabilite a un titre non présent en base alors on la considère comme nouvelle et on la garde")
     @Test
     public void testTrouverLesNouvellesResponsabilites_vraiNouvelles(){
+        //une responsabilite est une "vrai nouvelle" si elle possède
+        //un titre nouveau par rapport à ceux présent en base.
         Responsabilite n = new Responsabilite();
         n.setTitre("nouvelle");
         enInput.getListeResponsabilites().add(n);
+
 
         List<Responsabilite> resultat = klassService.trouverLesNouvellesResponsabilites(enInput, enBase);
 
         Assertions.assertEquals(1, resultat.size());
     }
 
+    @DisplayName("si la responsabilite a un titre égall à une responsabilite " +
+            "en base alors on ne la considère pas comme nouvelle et on ne la garde pas")
     @Test
     public void testTrouverLesNouvellesResponsabilites_fausseNouvelle(){
         Responsabilite n = new Responsabilite();
@@ -78,6 +85,8 @@ public class KlassServiceTest {
         Assertions.assertEquals(0, resultat.size());
     }
 
+    @DisplayName("si une responsabilité est égale à une responsabilité en base, " +
+            "alors on met à jour celle en base à partir de la nouvelle")
     @Test
     public void mettreAJourLesResponsabilitesCommunes_vraiCommune(){
         Responsabilite r1 = new Responsabilite();
@@ -90,6 +99,8 @@ public class KlassServiceTest {
         Assertions.assertEquals("titre modifié", resultat.get(0).getTitre());
     }
 
+    @DisplayName("si une responsabilité n'est correspond à aucune responsabilité (même titre ou même id)" +
+            "en base alors elle n'est pas considéré comme commune")
     @Test
     public void testMettreAJourLesResponsabilitesCommunes_pasDeCommunes(){
         Responsabilite r = new Responsabilite();
@@ -101,6 +112,8 @@ public class KlassServiceTest {
         Assertions.assertEquals(0, resultat.size());
     }
 
+    @DisplayName("si une responsabilité en input partage le même titre qu'une responsabilité en base alors elles sont " +
+            "considérées comme communes")
     @Test
     public void testMettreAJourLesResponsabilitesCommunes_memeTitre(){
         Responsabilite r = new Responsabilite();
@@ -113,6 +126,8 @@ public class KlassServiceTest {
     }
 
 
+    @DisplayName("si une responsabilité en base ne correspond à aucune responsabilité en input (même titre ou même id) " +
+            "alors elle est considérée à supprimer")
     @Test
     public void testTrouverLesResponsabilitesASupprimer_uneResponsabiliteASupprimer(){
         Responsabilite r = new Responsabilite();
