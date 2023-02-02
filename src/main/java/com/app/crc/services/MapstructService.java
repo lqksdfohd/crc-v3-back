@@ -7,6 +7,7 @@ import com.app.crc.dtos.ProjetDto;
 import com.app.crc.entites.Klass;
 import com.app.crc.entites.Projet;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +24,9 @@ public interface MapstructService {
 
     List<ProjetDto> listeProjetVersListeProjetDto(List<Projet> liste);
 
+    @Mapping(source = "listeCollaborateurs", target = "listeEnTantQuePrincipal")
     Klass klassDtoVersKlass(KlassDto dto);
 
+    @Mapping(source = "listeEnTantQuePrincipal", target = "listeCollaborateurs")
     KlassDto klassVersKlassDto(Klass klass);
 }
