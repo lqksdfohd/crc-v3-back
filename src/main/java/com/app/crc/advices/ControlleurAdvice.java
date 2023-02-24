@@ -13,8 +13,8 @@ public class ControlleurAdvice {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Erreur> gererException(IllegalArgumentException ex, WebRequest request){
         Erreur erreur = new Erreur();
-        erreur.setCode("400");
-        erreur.setRaison(ex.getMessage());
+        erreur.setStatus("400");
+        erreur.setError(ex.getMessage());
         ResponseEntity<Erreur> responseEntity = new ResponseEntity<Erreur>(erreur, HttpStatus.BAD_REQUEST);
         return responseEntity;
     }

@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class Erreur {
-    private String raison;
-    private String code;
+    private String error;
+    private String status;
 }
