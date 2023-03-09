@@ -13,10 +13,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 public class KlassServiceTest {
@@ -288,6 +290,35 @@ public class KlassServiceTest {
     }
 
 
+    @Test
+    public void testFindKlassById_Ok(){
+        Klass klass = new Klass();
+        klass.setId(1L);
+
+        Mockito.when(klassRepository.findById(1L)).thenReturn(Optional.of(klass));
+
+        Klass resultat = klassService.findKlassById(1L);
+
+        Assertions.assertEquals(klass, resultat);
+    }
+
+    @Test
+    public void testFindKlassById_klassNonExistanteEnBase(){
+        Klass klass = new Klass();
+        klass.setId(1l);
+
+        Mockito.when(klassRepository.findById(1l)).thenReturn(Optional.empty());
+
+        Assertions.assertThrows(IllegalArgumentException.class, ()-> klassService.findKlassById(1L));
+    }
+
+    @Test
+    public void testFindKlassById_mauvaisArgument(){
+
+        Assertions.assertThrows(IllegalArgumentException.class, () ->klassService.findKlassById(null));
+
+
+    }
 
 
 
