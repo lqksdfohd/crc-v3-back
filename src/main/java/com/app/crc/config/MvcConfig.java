@@ -11,4 +11,5 @@ public class MvcConfig implements WebMvcConfigurer {
                 .allowedMethods(new String[]{"POST", "GET","DELETE"})
                 .allowedOrigins(new String[]{"http://localhost:4200"});
     }
+
 }

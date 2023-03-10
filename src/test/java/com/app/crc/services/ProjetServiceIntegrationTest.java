@@ -36,7 +36,7 @@ public class ProjetServiceIntegrationTest {
     @Test
     public void testCreerProjet_projetDejaExistant(){
         Projet projet = new Projet();
-        projet.setNom("projet existant");
+        projet.setNom("todo-list");
         Assertions.assertThrows(IllegalArgumentException.class, () -> projetService.creerProjet(projet));
     }
 }
