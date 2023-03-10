@@ -87,7 +87,7 @@ public class ProjetControlleurTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(inputDto)))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.raison", Matchers.is("projet déjà existant")));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error", Matchers.is("projet déjà existant")));
     }
 
     @Test
@@ -188,15 +188,16 @@ public class ProjetControlleurTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/projet/{projetId}", 1L)
                 .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.raison", Matchers.is("aucun projet ne correspond à cet id")));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error", Matchers.is("aucun projet ne correspond à cet id")));
     }
 
     @Test
-    public void testSauvegarderUneNouvelleKlass_notValid() throws Exception{
+    @DisplayName("si une klass n'est pas valide alors la requete est considérée comme mauvaise")
+    public void testAjouterUneKlassAuProjet_notValid() throws Exception{
         KlassDto dto = new KlassDto();
         dto.setCreation(true);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/projet/1")
+        mockMvc.perform(MockMvcRequestBuilders.post("/projet/1/klass")
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(dto)))
@@ -204,8 +205,8 @@ public class ProjetControlleurTest {
     }
 
     @Test
-    @DisplayName("si une IllegalArgumentException est renvoyé, elle est capturé")
-    public void testSauvegarderUneNouvelleKlass_IllegalArgumentExceptionRenvoye() throws Exception{
+    @DisplayName("si une IllegalArgumentException est jetée, elle est capturé et son message est renvoyé au front")
+    public void testAjouterUneKlassAuProjet_IllegalArgumentExceptionRenvoye() throws Exception{
         KlassDto dto = new KlassDto();
         dto.setCreation(true);
         dto.setNom("test123");
@@ -216,12 +217,12 @@ public class ProjetControlleurTest {
         Mockito.when(projetService.recupererUnProjetParId(Mockito.anyLong()))
                 .thenThrow(new IllegalArgumentException("une exception depuis les services"));
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/projet/1")
+        mockMvc.perform(MockMvcRequestBuilders.post("/projet/1/klass")
                 .content(objectMapper.writeValueAsString(dto))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.raison", Matchers.is("une exception depuis les services")));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error", Matchers.is("une exception depuis les services")));
     }
 
 
